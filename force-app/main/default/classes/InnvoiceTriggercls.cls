@@ -1,3 +1,5 @@
 public class InnvoiceTriggercls {
-  System.debug("Trigger is invoked ");
+
+System.debug('trigger is invoked ');
+
 }

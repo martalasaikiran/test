@@ -1,0 +1,45 @@
+<template>
+    <lightning-card title={formtitle}>
+        <div class="slds-p-around_xx-small">
+            <lightning-combobox
+            name="ParentAccount"
+            label="ParentAccount"
+             value={value}
+            placeholder="Select The Parent Account"
+            options={optionsparent}
+            onchange={handleChange}
+             ></lightning-combobox>
+
+        </div>
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-input type="text" value={accName} label="Account Name" placeholder="Enter the Account Name "  onchange={accnamehandle} required></lightning-input>
+        </div>
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-input type="phone"  value={accPhone} label="Phone" placeholder="Enter the Phone Number  " max-length="10" onchange={accphonehandle}></lightning-input>
+        </div>
+        
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-combobox
+            name="ParentAccount"
+            label="Industry"
+            value={industryvalue}
+            placeholder="Select the industry"
+            options={industry}
+            onchange={industryhandlechange} ></lightning-combobox>
+        </div>
+       <div class="slds-p-left_xx-large">
+      
+         <lightning-button variant="brand" label="Save" title="Submit" onclick={handleSave}></lightning-button>
+       
+       </div>
+       <template lwc:if={deletebuttonpresence}>
+        <lightning-button variant="destructive" 
+        label="Delete Account "
+        title="Destructive action" 
+        onclick={deletehandler}
+         class="slds-m-left_x-small">
+
+        </lightning-button>
+       </template>
+    </lightning-card>
+</template>

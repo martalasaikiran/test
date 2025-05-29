@@ -1,0 +1,11 @@
+<template>
+   
+    <lightning-input label="New Item" onchange={handleChange}></lightning-input>
+    <lightning-button variant="brand" label="Add item " value=" Button" onclick={addItemToList}>
+</lightning-button>
+<template for:each={myList} for:item="item">
+    <p key={item}>{item}</p>
+
+</template>
+    
+</template>

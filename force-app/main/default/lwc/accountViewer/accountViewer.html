@@ -1,0 +1,23 @@
+<template>
+ 
+    <div class="slds-grid slds-grid_align-end slds-p-around_medium">
+        <lightning-button label="Logout" onclick={navigateToLogin}></lightning-button>
+    </div>
+
+
+<lightning-card title="Accounts List">
+    <lightning-datatable
+        key-field="Id"
+        data={accounts}
+        columns={columns}
+        onrowaction={handleRowAction}>
+    </lightning-datatable>
+</lightning-card>
+
+<template if:true={selectedAccountId}>
+    <c-related-lists record-id={selectedAccountId}></c-related-lists>
+</template>
+<template if:true={isManager}>
+    <c-manager-login-activity></c-manager-login-activity>
+</template>
+</template>

@@ -4,6 +4,7 @@ global with sharing class accountapihelper {
     @HttpGet()
     global static List<Account> getAccounts() {
         try {
+            System.debug('Account Service web server ');
             List<Account> lstaccounts = [SELECT Name, Industry FROM Account];
             return lstaccounts;
         } catch (Exception e) {

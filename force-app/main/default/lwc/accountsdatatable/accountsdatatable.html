@@ -1,0 +1,49 @@
+<template>
+    <lightning-card title="Accounts Table" icon-name="standard:account">
+        <template if:true={accounts.data}>
+            <lightning-datatable
+                key-field="Id"
+                data={accounts.data}
+                columns={columns}
+                onrowaction={handleRowAction}>
+            </lightning-datatable>
+        </template>
+
+        <div align="center" style="margin-top: 1rem;">
+            <lightning-button
+                variant="brand-outline"
+                label="Logout"
+                title="Log out"
+                onclick={onlogout}>
+            </lightning-button>
+        </div>
+    </lightning-card>
+
+    <template if:true={selectedAccountId}>
+       
+
+        <lightning-card title="Opportunities">
+            <lightning-datatable
+                key-field="Id"
+                data={opportunities}
+                columns={opportunityColumns}>
+            </lightning-datatable>
+        </lightning-card>
+
+        <lightning-card title="Contacts">
+            <lightning-datatable
+                key-field="Id"
+                data={contacts}
+                columns={contactColumns}>
+            </lightning-datatable>
+        </lightning-card>
+
+        <lightning-card title="Cases">
+            <lightning-datatable
+                key-field="Id"
+                data={cases}
+                columns={caseColumns}>
+            </lightning-datatable>
+        </lightning-card>
+    </template>
+</template>

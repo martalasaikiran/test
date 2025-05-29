@@ -1,0 +1,10 @@
+<template>
+    <lightning-button label="Click Me" onclick={handleClick}></lightning-button>
+    <div class="listContainer">
+        <ul>
+            <template for:each={myList} for:item="item">
+                <li key={item}>{item}</li>
+            </template>
+        </ul>
+    </div>
+</template>

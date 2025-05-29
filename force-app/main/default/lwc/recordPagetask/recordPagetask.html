@@ -1,0 +1,14 @@
+<template>
+    <lightning-card title="Create Record">
+        <lightning-record-form
+            object-api-name={objectApiName}
+            fields={fields}
+            columns="2"
+            onsuccess={handleSuccess}
+             oncancel={handleSuccess}
+            mode="create">
+            
+        </lightning-record-form>  
+       
+    </lightning-card>
+</template>

@@ -1,0 +1,11 @@
+<template>
+    <b style="color :black; font-size:20px;">Top 5 Revenue Holders Details </b>
+    <br>
+    <br>
+    <template style="padding:15px;" for:each={accountsToDisplay} for:item="account">
+        <lightning-card key={account.Id}>
+            <p>{account.Name}</p>
+            <p>{account.AnnualRevenue}</p>
+        </lightning-card>
+    </template>
+</template>

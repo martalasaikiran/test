@@ -1,0 +1,7 @@
+.green-dot {
+    --slds-c-icon-color-foreground-default: green;
+}
+
+.gray-dot {
+    --slds-c-icon-color-foreground-default: gray;
+}

@@ -9,6 +9,7 @@ public class AccCountRecord {
             }
         }
         }
+        System.debug('Comment ');
         if (oldMap != null) {
             for (Contact c : oldMap.values()) {
                 if (c.AccountId != null) {

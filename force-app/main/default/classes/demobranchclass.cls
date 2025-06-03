@@ -6,7 +6,7 @@ public with sharing class demobranchclass {
         for(Integer i=0; i<200; i++){
            Account acc = new Account();
            acc.Name='sai';
-           insert acc
+           insert acc;
         }
         
     }

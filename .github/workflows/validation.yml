@@ -36,14 +36,14 @@ jobs:
 
           echo "▶ Running PMD (text output for GitHub logs)..."
           ./pmd-bin-6.55.0/bin/run.sh pmd \
-            -d force-app/main/default/classes \
-            -R force-app/main/default/classes/apex-ruleset.xml \
+            -d force-app/**
+            -R force-app/**
             -f text
 
           echo "▶ Generating PMD HTML report..."
           ./pmd-bin-6.55.0/bin/run.sh pmd \
-            -d force-app/main/default/classes \
-            -R force-app/main/default/classes/apex-ruleset.xml \
+            -d force-app/**
+            -R force-app/**
             -f html \
             -r reports/pmd-report.html
 

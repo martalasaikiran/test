@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import Customways from 'c/customways';
 
 describe('c-customways', () => {

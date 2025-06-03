@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import HighRevenue from 'c/highRevenue';
 
 describe('c-high-revenue', () => {

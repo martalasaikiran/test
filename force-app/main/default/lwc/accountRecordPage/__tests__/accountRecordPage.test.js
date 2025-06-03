@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import AccountRecordPage from 'c/accountRecordPage';
 
 describe('c-account-record-page', () => {

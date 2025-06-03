@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import Grandchildcontact from 'c/grandchildcontact';
 
 describe('c-grandchildcontact', () => {

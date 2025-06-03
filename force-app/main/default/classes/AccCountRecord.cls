@@ -1,6 +1,6 @@
 public class AccCountRecord {
     public static void countRecord(List<Contact> newList,Map<Id,Contact>oldMap){
-        
+        /*
           Set<Id> accountIds=new Set<id>();
         if (newList !=Null){
             for (Contact c:newList){
@@ -49,6 +49,7 @@ public class AccCountRecord {
         if (!accountsToUpdate.isEmpty()) {
             update accountsToUpdate;
         }
+            */
     }
  
 }

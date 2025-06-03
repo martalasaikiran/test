@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import Childcustomevent from 'c/childcustomevent';
 
 describe('c-childcustomevent', () => {

@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import ChildHook from 'c/childHook';
 
 describe('c-child-hook', () => {

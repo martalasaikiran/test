@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import ChildContact from 'c/childContact';
 
 describe('c-child-contact', () => {

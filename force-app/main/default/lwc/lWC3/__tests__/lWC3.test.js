@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+
 import LWC3 from 'c/lWC3';
 
 describe('c-l-w-c-3', () => {

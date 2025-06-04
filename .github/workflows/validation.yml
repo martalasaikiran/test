@@ -31,7 +31,7 @@ jobs:
           mkdir -p reports
           ./pmd-bin-6.55.0/bin/run.sh pmd \
             -d force-app/main/default/classes \
-            -R category/apex/design.xml \
+            -R force-app/main/default/apex-ruleset.xml \
             -f text \
             -r reports/pmd-report.txt || true
 

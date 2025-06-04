@@ -31,12 +31,35 @@ jobs:
           mkdir -p reports
           ./pmd-bin-6.55.0/bin/run.sh pmd \
             -d force-app/main/default/classes \
-            -R category/apex/design.xml \
-            -f text \
-            -r reports/pmd-report.txt || true
+            -R force-app/main/default/apex-ruleset.xml \
+            -f xml \
+            -r reports/pmd-report.xml || true
+
+      - name: Parse PMD Results and Add Warnings
+        run: |
+          pip install xmltodict
+          python3 <<EOF
+import xmltodict
+
+with open("reports/pmd-report.xml") as f:
+    data = xmltodict.parse(f.read())
+
+violations = data.get("pmd", {}).get("file", [])
+if isinstance(violations, dict):
+    violations = [violations]
+
+for file in violations:
+    filename = file["@name"]
+    for violation in file.get("violation", []):
+        if isinstance(violation, str):
+            continue
+        line = violation["@beginline"]
+        message = violation["#text"].strip().replace('\n', ' ')
+        print(f"::warning file={filename},line={line}::{message}")
+ EOF
 
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
         with:
           name: pmd-report
-          path: reports/pmd-report.txt
+          path: reports/pmd-report.xml

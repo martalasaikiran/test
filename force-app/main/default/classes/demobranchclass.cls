@@ -5,7 +5,7 @@ public with sharing class demobranchclass {
         List<Contact> con = [Select FirstName From Contact];
         for(Integer i=0; i<200; i++){
            Account acc = new Account();
-           acc.Name='sai';
+           acc.Name='saiki';
            insert acc;
         }
         

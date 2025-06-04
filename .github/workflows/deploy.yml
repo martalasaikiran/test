@@ -1,30 +1,29 @@
-name: Close Production Pull Request
- 
+name: Deploy to Salesforce Org
+
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
     paths:
       - 'force-app/**'
- 
+
 jobs:
-  merge_job:
-    if: github.event.pull_request.merged == true
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Deploy on Org
-        uses: jawills/sf-deploy@v1.0
-        with:
-          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
-          DRY_RUN: false
-          TEST_LEVEL: NoTestRun
- 
-  close_job:
-    if: github.event.pull_request.merged == false
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "PR #${{ github.event.number }} has been closed without being merged"
- 
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install sfdx-cli --global
+
+      - name: Authenticate to Org
+        run: echo "${{ secrets.SFDX_AUTH_URL }}" > authFile.txt
+
+      - name: Authorize Org
+        run: sfdx auth:sfdxurl:store -f authFile.txt -a DevOrg
+
+      - name: Deploy to Org
+        run: sfdx force:source:deploy -p force-app -u DevOrg --testlevel RunLocalTests

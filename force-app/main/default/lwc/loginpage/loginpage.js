@@ -2,7 +2,7 @@ import { LightningElement,api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import { createRecord } from 'lightning/uiRecordApi';
-import CRObject from '@salesforce/schema/Credential__c';
+import CRObject from '@salesforce/schema/Credential__c'; 
 import CR_Name from '@salesforce/schema/Credential__c.Name__c';
 import CR_Age from '@salesforce/schema/Credential__c.Age__c';
 import CR_JoiningDate from '@salesforce/schema/Credential__c.JoiningDate__c';

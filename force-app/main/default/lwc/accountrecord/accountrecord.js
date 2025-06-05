@@ -1,6 +1,6 @@
 import { LightningElement } from 'lwc';
 import Name from '@salesforce/schema/Account.Name';
-import Industry from '@salesforce/schema/Account.Indutry';
+import Industry from '@salesforce/schema/Account.Industry';
 
 export default class Accountrecord extends LightningElement {
     Name ;

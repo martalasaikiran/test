@@ -113,7 +113,7 @@ export default class ApexDatatableExample extends LightningElement {
         })
         .then(() => {
             this.showToast('Success', 'Logout time updated successfully.', 'success');
-            this.dispatchEvent(new CustomEvent('logout'));
+            this.dispatchEvent(new CustomEvent('logout'));   
         })
         .catch((error) => {
             console.error('Logout error:', error);

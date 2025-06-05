@@ -15,6 +15,7 @@ export default class Accountrecord extends LightningElement {
           this.Industry=event.target.value;
     }
     handleClickButton(){
+        console.log('button clicked');
         let inputfields = {};
                 inputfields[Name.fieldApiName] = this.Name;
                 inputfields[Industry.fieldApiName] = this.Industry;

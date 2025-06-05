@@ -1,4 +1,7 @@
 import { LightningElement } from 'lwc';
+import Account_Obj from '@salesforce/schema/Account';
+import { createRecord } from 'lightning/uiRecordApi';
+
 import Name from '@salesforce/schema/Account.Name';
 import Industry from '@salesforce/schema/Account.Industry';
 
@@ -12,11 +15,12 @@ export default class Accountrecord extends LightningElement {
           this.Industry=event.target.value;
     }
     handleClickButton(){
+        console.log('button clicked');
         let inputfields = {};
                 inputfields[Name.fieldApiName] = this.Name;
                 inputfields[Industry.fieldApiName] = this.Industry;
                   const recordinput = {
-                            apiName: Account.objectApiName,
+                            apiName: Account_Obj.objectApiName,
                             fields: inputfields
                         };
         createRecord(recordinput)

@@ -8,7 +8,7 @@ export default class Accountrecord extends LightningElement {
     OnNameChange(event){
         this.Name=event.target.value;
     }
-    OnIndustryChange(){
+    OnIndustryChange(event){
           this.Industry=event.target.value;
     }
     handleClickButton(){

@@ -1,65 +1,50 @@
-name: Validate on Pull Request
-
+validate .yml file with PMD Download                                                                                                                                                                              name: Validate Production Pull Request
+ 
 on:
   pull_request:
     branches:
       - main
     paths:
       - 'force-app/**'
-
+ 
 jobs:
   validate:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup Java (for PMD)
+ 
+      - name: Setup Java (required for PMD)
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-
+ 
       - name: Download PMD
         run: |
           curl -L -o pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F6.55.0/pmd-bin-6.55.0.zip
           unzip pmd.zip
-
+ 
       - name: Run PMD Analysis
         run: |
           mkdir -p reports
           ./pmd-bin-6.55.0/bin/run.sh pmd \
             -d force-app/main/default/classes \
-            -R force-app/main/default/apex-ruleset.xml \
-            -f xml \
-            -r reports/pmd-report.xml || true
-
-      - name: Parse PMD Results and Add Warnings
-        run: |
-          pip install xmltodict
-          python3 <<EOF
-import xmltodict
-
-with open("reports/pmd-report.xml") as f:
-    data = xmltodict.parse(f.read())
-
-violations = data.get("pmd", {}).get("file", [])
-if isinstance(violations, dict):
-    violations = [violations]
-
-for file in violations:
-    filename = file["@name"]
-    for violation in file.get("violation", []):
-        if isinstance(violation, str):
-            continue
-        line = violation["@beginline"]
-        message = violation["#text"].strip().replace('\n', ' ')
-        print(f"::warning file={filename},line={line}::{message}")
-EOF
-
+            -R force-app/main/default/classes/apex-ruleset.xml \
+            -f html \
+            -r reports/pmd-report.html || true
+ 
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
         with:
           name: pmd-report
-          path: reports/pmd-report.xml
+          path: reports/pmd-report.html
+ 
+      - name: Validate on our Org (Dry Run)
+        uses: jawills/sf-deploy@v1.0
+        with:
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+          DRY_RUN: true
+          TEST_LEVEL: NoTestRun
+ 
+ 

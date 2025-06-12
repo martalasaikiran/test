@@ -1,0 +1,12 @@
+<template>
+    <lightning-card title="Contacts Table" icon-name="standard:account">
+        <div class="slds-p-around_medium">
+            <lightning-datatable
+                key-field="Id"
+                data={contacts}
+                columns={columns}
+                >
+            </lightning-datatable>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,13 @@
+<template>
+    <lightning-card title="Account Info">
+        <template if:true={accountRecord.data}>
+            <p><strong>Name:</strong> {name}</p>
+            
+            <p><strong>Industry:</strong> {industry}</p>
+        </template>
+
+        <template if:true={accountRecord.error}>
+            <p>Error loading record: {accountRecord.error.message}</p>
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,16 @@
+<template>
+    <lightning-card title="LoginPage" label="render">
+        
+        <lightning-button variant="brand-outline" label="Account Name" 
+            title="Primary action with lighter look" 
+            onclick={handleClick} 
+            class="slds-m-left_x-small">
+        </lightning-button>
+
+        <template if:true={accountNames}>
+            <template for:each={accountNames} for:item="acc">
+                <p key={acc.name}>{acc.name}</p>
+            </template>
+        </template>
+    </lightning-card>
+</template>

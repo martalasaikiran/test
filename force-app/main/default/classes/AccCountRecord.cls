@@ -9,13 +9,10 @@ public class AccCountRecord {
             }
         }
         }
-<<<<<<< HEAD
         System.debug('Comment 1');
         System.debug('comment 2');
         
-=======
         System.debug('Comment ');
->>>>>>> main
         if (oldMap != null) {
             for (Contact c : oldMap.values()) {
                 if (c.AccountId != null) {

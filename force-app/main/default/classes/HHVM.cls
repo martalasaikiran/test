@@ -15,6 +15,6 @@ public with sharing class HHVM {
 
     public HHVM() {
         
-        System.debug('HHVM constructor Invokedinvoked');
+        System.debug('HHVM  constructoooorr Invokedinvoked');
     }
 }

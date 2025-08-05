@@ -22,23 +22,26 @@ jobs:
 
       - name: Run SFDX scanner on code
         run: |
-          mkdir -p dist/changed-metadata
-          # Copy your changed classes to this folder if needed
-          cp -r force-app/main/default/classes/* dist/changed-metadata/
-          
-          cd dist/changed-metadata
+          mkdir -p ${{ github.workspace }}/dist
+          cd ${{ github.workspace }}/dist/changed-metadata
           sf scanner:run \
-            --format csv \
+            --format json \
             --target './**/*.cls' \
             --category "Design,Best Practices,Performance" \
-            --outfile ../ScanResults.csv
+            --outfile ${{ github.workspace }}/dist/ScanResults.json
           cd ../..
 
-      - name: Upload Salesforce Scanner Report
+      - name: Zip Salesforce Scanner Report
+        run: |
+          cd ${{ github.workspace }}/dist
+          zip scanner-report.zip ScanResults.json
+          cd ..
+
+      - name: Upload Salesforce Scanner Report (Zipped JSON)
         uses: actions/upload-artifact@v4
         with:
           name: scanner-report
-          path: dist/ScanResults.csv
+          path: dist/scanner-report.zip
 
       - name: Validate on our Org (Dry Run)
         uses: jawills/sf-deploy@v1.0

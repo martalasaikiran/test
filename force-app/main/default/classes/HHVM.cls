@@ -5,6 +5,8 @@ public with sharing class HHVM {
 
     public HHVM() {
         System.debug('Debugging'); // Excessive debug violation
+        System.debug('Debugging');
+        
     }
 
     public static void doSomething() {

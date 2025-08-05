@@ -20,16 +20,14 @@ jobs:
       - name: Install Salesforce Scanner Plugin
         run: sf plugins install @salesforce/sfdx-scanner
 
-      - name: Run SFDX scanner on code
-        run: |
-          mkdir -p ${{ github.workspace }}/dist
-          cd ${{ github.workspace }}/dist/changed-metadata
-          sf scanner:run \
-            --format json \
-            --target './**/*.cls' \
-            --category "Design,Best Practices,Performance" \
-            --outfile ${{ github.workspace }}/dist/ScanResults.json
-          cd ../..
+     - name: Run SFDX scanner on code
+  run: |
+    mkdir -p ${{ github.workspace }}/dist
+    sf scanner:run \
+      --format json \
+      --target 'force-app/main/default/classes/**/*.cls' \
+      --category "Design,Best Practices,Performance" \
+      --outfile ${{ github.workspace }}/dist/ScanResults.json
 
       - name: Zip Salesforce Scanner Report
         run: |

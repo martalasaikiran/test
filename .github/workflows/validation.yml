@@ -1,75 +1,44 @@
 name: Validate Production Pull Request
- 
+
 on:
   pull_request:
     branches:
       - main
     paths:
       - 'force-app/**'
- 
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
- 
-      - name: Setup Java (required for PMD)
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
- 
+
       - name: Install Salesforce CLI
-        run: |
-          npm install --global @salesforce/cli
- 
+        run: npm install --global @salesforce/cli
+
       - name: Install Salesforce Scanner Plugin
-        run: |
-          sf plugins install @salesforce/sfdx-scanner
- 
-     
+        run: sf plugins install @salesforce/sfdx-scanner
+
       - name: Run Salesforce Code Analyzer (Scanner)
         run: |
           mkdir -p reports
           sf scanner:run \
-            --format html \
-            --target "force-app/main/default/classes/**/*.cls" \
-            --category "Design,Best Practices,Performance" \
-            --outfile reports/scanner-report.html || true
- 
+            --format json \
+            --target "force-app/main/default/classes/**/*.cls,force-app/main/default/lwc/**/*.js" \
+            --category "Design,Best Practices,Performance,Code Style" \
+            --outfile reports/scanner-report.json || true
+          zip -j reports/scanner-report.zip reports/scanner-report.json
+
       - name: Upload Salesforce Scanner Report
         uses: actions/upload-artifact@v4
         with:
           name: scanner-report
-          path: reports/scanner-report.html
- 
-      - name: Download PMD
-        run: |
-          curl -L -o pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F6.55.0/pmd-bin-6.55.0.zip
-          unzip pmd.zip
- 
-      - name: Run PMD Analysis
-        run: |
-          mkdir -p reports
-          ./pmd-bin-6.55.0/bin/run.sh pmd \
-            -d force-app/main/default/classes \
-            -R force-app/main/default/classes/apex-ruleset.xml \
-            -f html \
-            -r reports/pmd-report.html || true
- 
-      - name: Upload PMD Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: pmd-report
-          path: reports/pmd-report.html
- 
- 
+          path: reports/scanner-report.zip
+
       - name: Validate on our Org (Dry Run)
         uses: jawills/sf-deploy@v1.0
         with:
           SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
           DRY_RUN: true
           TEST_LEVEL: NoTestRun
- 
- 

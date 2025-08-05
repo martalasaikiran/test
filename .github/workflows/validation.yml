@@ -6,12 +6,35 @@ on:
       - main
     paths:
       - 'force-app/**'
+ 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Validate on our Org
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Salesforce CLI
+        run: |
+          npm install --global sfdx-cli
+          sfdx plugins:install @salesforce/sfdx-scanner
+
+      - name: Run Salesforce Code Analyzer
+        run: |
+          mkdir -p reports
+          sf scanner:run \
+            --target "force-app/main/default/classes/**/*.cls" \
+            --format html \
+            --category "Design,Best Practices,Performance" \
+            --outfile reports/scan-report.html || true
+
+      - name: Upload Scan Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-report
+          path: reports/scan-report.html
+
+      - name: Validate on Org (Dry Run)
         uses: jawills/sf-deploy@v1.0
         with:
           SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}

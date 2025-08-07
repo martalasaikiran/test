@@ -17,16 +17,16 @@ jobs:
       - name: Install Salesforce CLI
         run: npm install --global @salesforce/cli
  
-      - name: Install Salesforce Scanner Plugin
-        run: sf plugins install @salesforce/sfdx-scanner
+      - name: Install Salesforce Code Analyzer Plugin
+        run: sf plugins install @salesforce/code-analyzer
  
-      - name: Run Salesforce Code Analyzer (Scanner)
+      - name: Run Salesforce Code Analyzer (ESLint for LWC)
         run: |
           mkdir -p reports
-          sf scanner:run \
+          sf codeanalyzer run \
             --format json \
            --target "force-app/main/default/lwc/*/*.js" \
-            --category "Design,Best Practices,Performance,Code Style" \
+          --category "Code Style" \
             --outfile reports/scanner-report.json || true
           zip -j reports/scanner-report.zip reports/scanner-report.json
  

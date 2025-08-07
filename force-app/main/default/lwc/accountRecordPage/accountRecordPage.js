@@ -1,5 +1,8 @@
 import { LightningElement } from 'lwc';
 
 export default class AccountRecordPage extends LightningElement {
-    console.log('test');
+    connnectedCallback(){
+       console.log('test');
+    }
+    
 }

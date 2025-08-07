@@ -26,6 +26,7 @@ export default class Accountrecord extends LightningElement {
         createRecord(recordinput)
                    .then((result) => {
                        console.log('Record created successfully. Id:', result.id);
+                       console.log('Record details:', JSON.stringify(result));
                        this.showToast('Success', 'Account Record Created', 'success');
                        
                        

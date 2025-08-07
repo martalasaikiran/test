@@ -35,7 +35,7 @@ jobs:
           mkdir -p reports
           sf scanner:run \
             --format json \
-           --target "force-app/main/default/lwc/*/*.js" \
+           --target "force-app/main/default/lwc/*/*.js,force-app/main/default/classes/*.cls" \
            --category "Design,Best Practices,Performance,Code Style" \
            --outfile reports/scanner-report.json || true
           zip -j reports/scanner-report.zip reports/scanner-report.json

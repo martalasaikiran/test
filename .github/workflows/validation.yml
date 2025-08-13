@@ -42,7 +42,7 @@ jobs:
       - name: Install Salesforce Scanner Plugin
         run: sf plugins install @salesforce/sfdx-scanner
 
-      - name: Run Diff & Overall Scans
+      - name: Run Diff & Overall Scans (Separate ZIPs)
         run: |
           mkdir -p reports
           
@@ -64,13 +64,20 @@ jobs:
             --category "Design,Best Practices,Performance" \
             --outfile reports/scanner-overall.json || true
           
-          # Zip both
+          # Zip separately
           cd reports
-          zip sca-reports.zip scanner-diff.json scanner-overall.json
+          zip sca-diff.zip scanner-diff.json
+          zip sca-overall.zip scanner-overall.json
           cd ..
 
-      - name: Upload Combined SCA Reports
+      - name: Upload Diff SCA Report
         uses: actions/upload-artifact@v4
         with:
-          name: sca-reports
-          path: reports/sca-reports.zip
+          name: sca-diff
+          path: reports/sca-diff.zip
+
+      - name: Upload Overall SCA Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sca-overall
+          path: reports/sca-overall.zip

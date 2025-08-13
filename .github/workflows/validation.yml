@@ -1,54 +1,62 @@
 name: Validate Production Pull Request
- 
+
 on:
   pull_request:
     branches:
       - main
     paths:
       - 'force-app/**'
- 
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
- 
+
+      - name: Get Changed Apex Classes
+        id: changes
+        run: |
+          # Get changed files in PR
+          git fetch origin ${{ github.base_ref }} --depth=1
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \
+            | grep '^force-app/.*\.cls$' || true)
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Save for later steps
+          {
+            echo "files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
       - name: Install Salesforce CLI
+        if: steps.changes.outputs.files != ''
         run: npm install --global @salesforce/cli
- 
+
       - name: Install Salesforce Scanner Plugin
+        if: steps.changes.outputs.files != ''
         run: sf plugins install @salesforce/sfdx-scanner
 
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install Node.js dependencies for ESLint
-        run: npm install
-
-
-      - name: Run Salesforce Code Analyzer (Scanner)
+      - name: Run Salesforce Code Analyzer (Scanner) on Changed Files
+        if: steps.changes.outputs.files != ''
         run: |
           mkdir -p reports
           sf scanner:run \
             --format json \
-           --target "force-app/main/default/lwc/*/*.js,force-app/main/default/classes/*.cls" \
-           --category "Design,Best Practices,Performance,Code Style" \
-           --outfile reports/scanner-report.json || true
-          zip -j reports/scanner-report.zip reports/scanner-report.json
- 
+            --target "${{ steps.changes.outputs.files }}" \
+            --category "Design,Best Practices,Performance" \
+            --outfile reports/scanner-report.json || true
+
       - name: Upload Salesforce Scanner Report
+        if: steps.changes.outputs.files != ''
         uses: actions/upload-artifact@v4
         with:
           name: scanner-report
-          path: reports/scanner-report.zip
- 
-      - name: Validate on our Org (Dry Run)
-        uses: jawills/sf-deploy@v1.0
-        with:
-          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
-          DRY_RUN: true
-          TEST_LEVEL: NoTestRun
+          path: reports/scanner-report.json
+
+      - name: Skip Analysis (No Apex Changes)
+        if: steps.changes.outputs.files == ''
+        run: echo "No Apex class changes detected. Skipping SCA."

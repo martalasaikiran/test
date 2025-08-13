@@ -4,6 +4,7 @@ public with sharing class TestApex {
        
     }
     public static void runTestApex(){
-        System.debug('sai');
+        Integer x;
+        System.debug('Running');
     }
 }

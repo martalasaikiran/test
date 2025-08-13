@@ -4,6 +4,6 @@ public with sharing class TestApex {
        
     }
     public static void runTestApex(){
-        System.debug('Running TestApex method');
+        System.debug('cc1');
     }
 }

@@ -1,73 +1,76 @@
 name: Validate Production Pull Request
- 
+
 on:
   pull_request:
     branches:
       - main
     paths:
       - 'force-app/**'
- 
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
- 
-      - name: Get Changed Apex Classes
+
+      - name: Get Changed Apex/JS Files
         id: changes
         run: |
-          # Get changed files in PR
           git fetch origin ${{ github.base_ref }} --depth=1
           CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \
-            | grep '^force-app/.*\.cls$' || true)
-         
+            | grep -E '^force-app/.*\.(cls|js)$' || true)
+
           echo "Changed files:"
           echo "$CHANGED_FILES"
-         
-          # Save for later steps
+
           {
             echo "files<<EOF"
             echo "$CHANGED_FILES"
             echo "EOF"
           } >> $GITHUB_OUTPUT
- 
+
       - name: Setup Java (required for PMD)
-        if: steps.changes.outputs.files != ''
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
- 
+
       - name: Install Salesforce CLI
-        if: steps.changes.outputs.files != ''
         run: npm install --global @salesforce/cli
- 
+
       - name: Install Salesforce Scanner Plugin
-        if: steps.changes.outputs.files != ''
         run: sf plugins install @salesforce/sfdx-scanner
- 
-      - name: Run Salesforce Code Analyzer (Scanner) on Changed Files
-        if: steps.changes.outputs.files != ''
+
+      - name: Run Diff & Overall Scans
         run: |
           mkdir -p reports
+          
+          # Run diff scan (only if changed files exist)
+          if [ -n "${{ steps.changes.outputs.files }}" ]; then
+            sf scanner:run \
+              --format json \
+              --target "${{ steps.changes.outputs.files }}" \
+              --category "Design,Best Practices,Performance" \
+              --outfile reports/scanner-diff.json || true
+          else
+            echo "[]" > reports/scanner-diff.json
+          fi
+          
+          # Run overall scan
           sf scanner:run \
             --format json \
-            --target "${{ steps.changes.outputs.files }}" \
+            --target "force-app" \
             --category "Design,Best Practices,Performance" \
-            --outfile reports/scanner-report.json || true
- 
-      - name: Upload Salesforce Scanner Report
-        if: steps.changes.outputs.files != ''
+            --outfile reports/scanner-overall.json || true
+          
+          # Zip both
+          cd reports
+          zip sca-reports.zip scanner-diff.json scanner-overall.json
+          cd ..
+
+      - name: Upload Combined SCA Reports
         uses: actions/upload-artifact@v4
         with:
-          name: scanner-report
-          path: reports/scanner-report.json
- 
-     
- 
-     
- 
-      - name: Skip Analysis (No Apex Changes)
-        if: steps.changes.outputs.files == ''
-        run: echo "No Apex class changes detected. Skipping SCA & PMD." 
+          name: sca-reports
+          path: reports/sca-reports.zip

@@ -1,40 +1,50 @@
-name: Validate Production Pull Request
+name: Based on the inputs Artifacts Generation 
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'force-app/**'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Name of the branch'
+        required: true
+        default: 'test'
+
+      diff:
+        description: 'Make the artifact from commit to commit'
+        # required: true
+        default: 'false'
+
+      overall:
+        description: 'Make the artifact based on the branch'
+        #required: true
+        default: 'false'
+
+      fromCommit:
+        description: 'From which commit to start to make the artifacts'
+        required: false
+        default: ''
+
+      toCommit:
+        description: 'To which commit to make the artifact'
+        required: false
+        default: ''
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Get Changed Apex/JS Files
-        id: changes 
+      - name: Check the variables and set
+        id: setvars
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD \
-            | grep -E '^force-app/.*\.(cls|js)$' || true)
-
-          echo "Changed files:"
-          echo "$CHANGED_FILES" 
-
-          {
-            echo "files<<EOF"
-            echo "$CHANGED_FILES"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
-
-      - name: Setup Java (required for PMD)
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "Diff: ${{ github.event.inputs.diff }}"
+          echo "Overall: ${{ github.event.inputs.overall }}"
+          echo "From commit: ${{ github.event.inputs.fromCommit }}"
+          echo "To commit: ${{ github.event.inputs.toCommit }}"
+          # Check that both diff and overall are not true at the same time
+          if [[ "${{ github.event.inputs.diff }}" == "true" && "${{ github.event.inputs.overall }}" == "true" ]]; then
+            echo "Both diff and overall cannot be true at the same time"
+            exit 1
+          fi
 
       - name: Install Salesforce CLI
         run: npm install --global @salesforce/cli
@@ -42,42 +52,52 @@ jobs:
       - name: Install Salesforce Scanner Plugin
         run: sf plugins install @salesforce/sfdx-scanner
 
-      - name: Run Diff & Overall Scans (Separate ZIPs)
+      # which branch you provide that repo you will get 
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      # Run Diff Scan
+      - name: Run Diff Scan
+        if: ${{ github.event.inputs.diff == 'true' }}
         run: |
+          echo "Running SCA on changed files between from commit and TOcommits"
+          git fetch origin ${{ github.event.inputs.branch }}
+
+          CHANGED_FILES=$(git diff --name-only \
+            ${{ github.event.inputs.fromCommit }} \
+            ${{ github.event.inputs.toCommit }} \
+            | grep -E '\.(cls|js)$' || true)
+
+          echo "Changed files: $CHANGED_FILES"
           mkdir -p reports
-          
-          # Run diff scan (only if changed files exist)
-          if [ -n "${{ steps.changes.outputs.files }}" ]; then
+
+          if [ -n "$CHANGED_FILES" ]; then
             sf scanner:run \
               --format json \
-              --target "${{ steps.changes.outputs.files }}" \
+              --target "$CHANGED_FILES" \
               --category "Design,Best Practices,Performance" \
               --outfile reports/scanner-diff.json || true
           else
             echo "[]" > reports/scanner-diff.json
           fi
-          
-          # Run overall scan
+
+      # Run Overall Scan
+      - name: Run Overall Scan
+        if: ${{ github.event.inputs.overall == 'true' }}
+        run: |
+          echo "Running SCA on entire branch..."
+          mkdir -p reports
           sf scanner:run \
             --format json \
-            --target "force-app" \
+            --target "force-app/**/*.cls,force-app/**/*.js" \
             --category "Design,Best Practices,Performance" \
             --outfile reports/scanner-overall.json || true
-          
-          # Zip separately
-          cd reports
-          zip sca-diff.zip scanner-diff.json
-          zip sca-overall.zip scanner-overall.json
-          cd ..
 
-      - name: Upload Diff SCA Report
+      #  reports
+      - name: Upload Scan Report
         uses: actions/upload-artifact@v4
         with:
-          name: sca-diff
-          path: reports/sca-diff.zip
-
-      - name: Upload Overall SCA Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sca-overall
-          path: reports/sca-overall.zip
+          name: sca-scan-report
+          path: reports/*.json

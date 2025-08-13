@@ -85,4 +85,4 @@ jobs:
  
       - name: Skip Analysis (No Apex Changes)
         if: steps.changes.outputs.files == ''
-        run: echo "No Apex class changes detected. Skipping SCA & PMD."
+        run: echo "No Apex class changes detected. Skipping SCA & PMD." 

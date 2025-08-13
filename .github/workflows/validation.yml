@@ -22,7 +22,7 @@ jobs:
             | grep -E '^force-app/.*\.(cls|js)$' || true)
 
           echo "Changed files:"
-          echo "$CHANGED_FILES"
+          echo "$CHANGED_FILES" 
 
           {
             echo "files<<EOF"
